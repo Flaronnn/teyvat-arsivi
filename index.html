@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Karakterler - Teyvat Arşivi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background: #0c0f12;
+            color: #f0f6fc; 
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .navbar { background-color: #161b22; border-bottom: 2px solid #30363d; }
+        
+        .char-card { 
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.2s ease-in-out;
+        }
+        .char-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffc107;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        
+        .rarity-5 { background: linear-gradient(180deg, #161b22 60%, #bc7a20 100%); }
+        .rarity-4 { background: linear-gradient(180deg, #161b22 60%, #7d519d 100%); }
+
+        .img-container {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            background: #21262d;
+        }
+        .char-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        .element-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-link { text-decoration: none; color: white; }
+        .stars { color: #ffc107; font-size: 0.75rem; }
+        .filter-panel { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow">
+        <div class="container">
+            <a class="navbar-brand text-warning fw-bold fs-4" href="index.html">Teyvat Arşivi</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active me-3" href="index.html">Karakterler</a>
+                <a class="nav-link text-white me-3" href="tier-list.html">Tier List</a>
+                <a class="nav-link text-white" href="hakkinda.html">Hakkında</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <div class="filter-panel p-3 mb-4 shadow-sm">
+            <h5 class="text-warning fw-bold mb-3">🔍 Gelişmiş Arama ve Filtreleme</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold">ELEMENT SEÇİN</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="elementFilter" onchange="applyFilters()">
+                        <option value="ALL">Tüm Elementler</option>
+                        <option value="Pyro">Pyro (Ateş)</option>
+                        <option value="Hydro">Hydro (Su)</option>
+                        <option value="Anemo">Anemo (Rüzgar)</option>
+                        <option value="Electro">Electro (Elektrik)</option>
+                        <option value="Dendro">Dendro (Doğa)</option>
+                        <option value="Cryo">Cryo (Buz)</option>
+                        <option value="Geo">Geo (Toprak)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold">SİLAH TÜRÜ SEÇİN</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="weaponFilter" onchange="applyFilters()">
+                        <option value="ALL">Tüm Silahlar</option>
+                        <option value="Sword">Sword (Tek Elli Kılıç)</option>
+                        <option value="Claymore">Claymore (Çift Elli Kılıç)</option>
+                        <option value="Polearm">Polearm (Mızrak)</option>
+                        <option value="Bow">Bow (Yay)</option>
+                        <option value="Catalyst">Catalyst (Büyü Kitabı)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4">
+            <h3 class="text-warning fw-bold m-0" id="list-headline">Tüm Karakterler</h3>
+            <span class="badge bg-dark border border-secondary px-3 py-2 fs-6 text-muted" id="char-count">107 Karakter</span>
+        </div>
+
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3" id="character-grid">
+            </div>
+    </main>
+
+    <script>
+        // Güncellenmiş ve "genshin" (mükerrer) kaydı silinmiş 107 Karakterlik Tam Liste
+        const characters = [
+            { id: "linnea", name: "Linnea", element: "Geo", weapon: "Bow", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "zibai", name: "Zibai", element: "Geo", weapon: "Sword", tier: "SS", role: "Main DPS", rarity: 5 },
+            { id: "columbina", name: "Columbina", element: "Hydro", weapon: "Catalyst", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "durin", name: "Durin", element: "Pyro", weapon: "Sword", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "flins", name: "Flins", element: "Electro", weapon: "Polearm", tier: "SS", role: "Main-DPS", rarity: 5 },
+            { id: "lauma", name: "Lauma", element: "Dendro", weapon: "Catalys", tier: "SS", role: "Support", rarity: 5 },
+            { id: "ineffa", name: "Ineffa", element: "Electro", weapon: "Catalyst", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "skirk", name: "Skirk", element: "Cryo", weapon: "Sword", tier: "SS", role: "Main DPS", rarity: 5 },
+            { id: "arlecchino", name: "Arlecchino", element: "Pyro", weapon: "Polearm", tier: "SS", role: "Main DPS", rarity: 5 },
+            { id: "mavuika", name: "Mavuika", element: "Pyro", weapon: "Claymore", tier: "SS", role: "Main DPS", rarity: 5 },
+            { id: "citlali", name: "Citlali", element: "Cryo", weapon: "Catalyst", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "xilonen", name: "Xilonen", element: "Geo", weapon: "Sword", tier: "SS", role: "Support", rarity: 5 },
+            { id: "furina", name: "Furina", element: "Hydro", weapon: "Sword", tier: "SS", role: "Support", rarity: 5 },
+            { id: "neuvillette", name: "Neuvillette", element: "Hydro", weapon: "Catalyst", tier: "SS", role: "Main DPS", rarity: 5 },
+            { id: "bennet", name: "Bennett", element: "Pyro", weapon: "Sword", tier: "SS", role: "Support", rarity: 4 },
+            { id: "iansan", name: "Iansan", element: "Electro", weapon: "Polearm", tier: "SS", role: "Support", rarity: 5 },
+            { id: "kazuha", name: "Kaedehara Kazuha", element: "Anemo", weapon: "Sword", tier: "SS", role: "Support", rarity: 5 },
+            { id: "yelan", name: "Yelan", element: "Hydro", weapon: "Bow", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "raiden", name: "Raiden Shogun", element: "Electro", weapon: "Polearm", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "escoffier", name: "Escoffier", element: "Cryo", weapon: "Polearm", tier: "SS", role: "Main DPS", rarity: 5 },
+            { id: "nilou", name: "Nilou", element: "Hydro", weapon: "Sword", tier: "SS", role: "Sub-DPS", rarity: 5 },
+            { id: "sucrose", name: "Sucrose", element: "Anemo", weapon: "Catalyst", tier: "SS", role: "Support", rarity: 4 },
+            { id: "nicole", name: "Nicole", element: "Pyro", weapon: "Catalyst", tier: "S", role: "Support", rarity: 5 },
+            { id: "varka", name: "Grand Master Varka", element: "Anemo", weapon: "Claymore", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "nefer", name: "Nefer", element: "Dendro", weapon: "Catalyst", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "nahida", name: "Nahida", element: "Dendro", weapon: "Catalyst", tier: "S", role: "Support", rarity: 5 },
+            { id: "varesa", name: "Varesa", element: "Electro", weapon: "Catalyst", tier: "S", role: "Sub-DPS", rarity: 5 },
+            { id: "mualani", name: "Mualani", element: "Hydro", weapon: "Catalyst", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "clorinde", name: "Clorinde", element: "Electro", weapon: "Sword", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "kinich", name: "Kinich", element: "Dendro", weapon: "Claymore", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "chasca", name: "Chasca", element: "Anemo", weapon: "Bow", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "chiori", name: "Chiori", element: "Geo", weapon: "Sword", tier: "A", role: "Sub-DPS", rarity: 5 },
+            { id: "alhaitam", name: "Alhaitham", element: "Dendro", weapon: "Sword", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "xiangling", name: "Xiangling", element: "Pyro", weapon: "Polearm", tier: "S", role: "Sub-DPS", rarity: 4 },
+            { id: "hutao", name: "Hu Tao", element: "Pyro", weapon: "Polearm", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "kokomi", name: "Sangonomiya Kokomi", element: "Hydro", weapon: "Catalyst", tier: "S", role: "Support", rarity: 5 },
+            { id: "lyney", name: "Lyney", element: "Pyro", weapon: "Bow", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "ganyu", name: "Ganyu", element: "Cryo", weapon: "Bow", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "ayaka", name: "Kamisato Ayaka", element: "Cryo", weapon: "Sword", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "yaemiko", name: "Yae Miko", element: "Electro", weapon: "Catalyst", tier: "S", role: "Sub-DPS", rarity: 5 },
+            { id: "zhongli", name: "Zhongli", element: "Geo", weapon: "Polearm", tier: "S", role: "Support", rarity: 5 },
+            { id: "xingqiu", name: "Xingqiu", element: "Hydro", weapon: "Sword", tier: "S", role: "Sub-DPS", rarity: 4 },
+            { id: "tartaglia", name: "Tartaglia", element: "Hydro", weapon: "Bow", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "fischl", name: "Fischl", element: "Electro", weapon: "Bow", tier: "S", role: "Sub-DPS", rarity: 4 },
+            { id: "tighnari", name: "Tighnari", element: "Dendro", weapon: "Bow", tier: "S", role: "Main DPS", rarity: 5 },
+            { id: "kukishinobu", name: "Kuki Shinobu", element: "Electro", weapon: "Sword", tier: "S", role: "Sub-DPS", rarity: 4 },
+            { id: "venti", name: "Venti", element: "Anemo", weapon: "Bow", tier: "S", role: "Support", rarity: 5 },
+            { id: "emilie", name: "Emilie", element: "Dendro", weapon: "Polearm", tier: "S", role: "Sub-DPS", rarity: 5 },
+            { id: "ororon", name: "Ororon", element: "Electro", weapon: "Bow", tier: "S", role: "Sub-DPS", rarity: 4 },
+            { id: "prune", name: "Prune", element: "Anemo", weapon: "Catalyst", tier: "A", role: "Support", rarity: 4 },
+            { id: "illuga", name: "Illuga", element: "Geo", weapon: "Claymore", tier: "A", role: "Main DPS", rarity: 4 },
+            { id: "keqing", name: "Keqing", element: "Electro", weapon: "Sword", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "chevreuse", name: "Chevreuse", element: "Pyro", weapon: "Polearm", tier: "A", role: "Support", rarity: 4 },
+            { id: "mizuki", name: "Mizuki", element: "Hydro", weapon: "Sword", tier: "A", role: "Sub-DPS", rarity: 4 },
+            { id: "sigewinne", name: "Sigewinne", element: "Hydro", weapon: "Bow", tier: "A", role: "Support", rarity: 5 },
+            { id: "lanyan", name: "Lanyan", element: "Anemo", weapon: "Catalyst", tier: "A", role: "Support", rarity: 4 },
+            { id: "xianyun", name: "Xianyun", element: "Anemo", weapon: "Catalyst", tier: "A", role: "Support", rarity: 5 },
+            { id: "navia", name: "Navia", element: "Geo", weapon: "Claymore", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "wriothesley", name: "Wriothesley", element: "Cryo", weapon: "Catalyst", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "yoimiya", name: "Yoimiya", element: "Pyro", weapon: "Bow", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "wanderer", name: "Wanderer", element: "Anemo", weapon: "Catalyst", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "shenhe", name: "Shenhe", element: "Cryo", weapon: "Polearm", tier: "A", role: "Support", rarity: 5 },
+            { id: "cyno", name: "Cyno", element: "Electro", weapon: "Polearm", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "jean", name: "Jean", element: "Anemo", weapon: "Sword", tier: "A", role: "Support", rarity: 5 },
+            { id: "xiao", name: "Xiao", element: "Anemo", weapon: "Polearm", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "mona", name: "Mona", element: "Hydro", weapon: "Catalyst", tier: "A", role: "Support", rarity: 5 },
+            { id: "ayato", name: "Kamisato Ayato", element: "Hydro", weapon: "Sword", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "thoma", name: "Thoma", element: "Pyro", weapon: "Polearm", tier: "A", role: "Support", rarity: 4 },
+            { id: "barbara", name: "Barbara", element: "Hydro", weapon: "Catalyst", tier: "A", role: "Support", rarity: 4 },
+            { id: "yaoyao", name: "Yaoyao", element: "Dendro", weapon: "Polearm", tier: "A", role: "Support", rarity: 4 },
+            { id: "baizhu", name: "Baizhu", element: "Dendro", weapon: "Catalyst", tier: "A", role: "Support", rarity: 5 },
+            { id: "klee", name: "Klee", element: "Pyro", weapon: "Catalyst", tier: "A", role: "Main DPS", rarity: 5 },
+            { id: "albedo", name: "Albedo", element: "Geo", weapon: "Sword", tier: "A", role: "Sub-DPS", rarity: 5 },
+            { id: "aino", name: "Aino", element: "Anemo", weapon: "Bow", tier: "A", role: "Support", rarity: 4 },
+            { id: "rosaria", name: "Rosaria", element: "Cryo", weapon: "Polearm", tier: "A", role: "Sub-DPS", rarity: 4 },
+            { id: "lynette", name: "Lynette", element: "Anemo", weapon: "Sword", tier: "B", role: "Sub-DPS", rarity: 4 },
+            { id: "layla", name: "Layla", element: "Cryo", weapon: "Sword", tier: "B", role: "Support", rarity: 4 },
+            { id: "itto", name: "Arataki Itto", element: "Geo", weapon: "Claymore", tier: "B", role: "Main DPS", rarity: 5 },
+            { id: "noelle", name: "Noelle", element: "Geo", weapon: "Claymore", tier: "B", role: "Main DPS", rarity: 4 },
+            { id: "eula", name: "Eula", element: "Cryo", weapon: "Claymore", tier: "B", role: "Main DPS", rarity: 5 },
+            { id: "diona", name: "Diona", element: "Cryo", weapon: "Bow", tier: "B", role: "Support", rarity: 4 },
+            { id: "diluc", name: "Diluc", element: "Pyro", weapon: "Claymore", tier: "B", role: "Main DPS", rarity: 5 },
+            { id: "beidou", name: "Beidou", element: "Electro", weapon: "Claymore", tier: "B", role: "Sub-DPS", rarity: 4 },
+            { id: "sara", name: "Kujou Sara", element: "Electro", weapon: "Bow", tier: "B", role: "Support", rarity: 4 },
+            { id: "faruzan", name: "Faruzan", element: "Anemo", weapon: "Bow", tier: "B", role: "Support", rarity: 4 },
+            { id: "lisa", name: "Lisa", element: "Electro", weapon: "Catalyst", tier: "B", role: "Sub-DPS", rarity: 4 },
+            { id: "collei", name: "Collei", element: "Dendro", weapon: "Bow", tier: "B", role: "Sub-DPS", rarity: 4 },
+            { id: "ifa", name: "Ifa", element: "Pyro", weapon: "Catalyst", tier: "B", role: "Sub-DPS", rarity: 4 },
+            { id: "razor", name: "Razor", element: "Electro", weapon: "Claymore", tier: "B", role: "Main DPS", rarity: 4 },
+            { id: "jahoda", name: "Jahoda", element: "Geo", weapon: "Polearm", tier: "B", role: "Support", rarity: 4 },
+            { id: "gaming", name: "Gaming", element: "Pyro", weapon: "Claymore", tier: "C", role: "Main DPS", rarity: 4 },
+            { id: "qiqi", name: "Qiqi", element: "Cryo", weapon: "Sword", tier: "C", role: "Support", rarity: 5 },
+            { id: "gorou", name: "Gorou", element: "Geo", weapon: "Bow", tier: "C", role: "Support", rarity: 4 },
+            { id: "sayu", name: "Sayu", element: "Anemo", weapon: "Claymore", tier: "C", role: "Support", rarity: 4 },
+            { id: "kaeya", name: "Kaeya", element: "Cryo", weapon: "Sword", tier: "C", role: "Sub-DPS", rarity: 4 },
+            { id: "mika", name: "Mika", element: "Cryo", weapon: "Polearm", tier: "C", role: "Support", rarity: 4 },
+            { id: "yunjin", name: "Yun Jin", element: "Geo", weapon: "Polearm", tier: "C", role: "Support", rarity: 4 },
+            { id: "kirara", name: "Kirara", element: "Dendro", weapon: "Sword", tier: "C", role: "Support", rarity: 4 },
+            { id: "chongyun", name: "Chongyun", element: "Cryo", weapon: "Claymore", tier: "C", role: "Sub-DPS", rarity: 4 },
+            { id: "yanfei", name: "Yanfei", element: "Pyro", weapon: "Catalyst", tier: "C", role: "Main DPS", rarity: 4 },
+            { id: "heizou", name: "Shikanoin Heizou", element: "Anemo", weapon: "Catalyst", tier: "C", role: "Main DPS", rarity: 4 },
+            { id: "freminet", name: "Freminet", element: "Cryo", weapon: "Claymore", tier: "D", role: "Main DPS", rarity: 4 },
+            { id: "kaveh", name: "Kaveh", element: "Dendro", weapon: "Claymore", tier: "D", role: "Main DPS", rarity: 4 },
+            { id: "ningguang", name: "Ningguang", element: "Geo", weapon: "Catalyst", tier: "D", role: "Main DPS", rarity: 4 },
+            { id: "dori", name: "Dori", element: "Electro", weapon: "Claymore", tier: "D", role: "Support", rarity: 4 },
+            { id: "candace", name: "Candace", element: "Hydro", weapon: "Polearm", tier: "D", role: "Support", rarity: 4 },
+            { id: "amber", name: "Amber", element: "Pyro", weapon: "Bow", tier: "D", role: "Sub-DPS", rarity: 4 },
+            { id: "xinyan", name: "Xinyan", element: "Pyro", weapon: "Claymore", tier: "D", role: "Main DPS", rarity: 4 },
+            { id: "dehya", name: "Dehya", element: "Pyro", weapon: "Claymore", tier: "D", role: "Support", rarity: 5 },
+            { id: "traveler", name: "Traveler Twins", element: "Değişken", weapon: "Sword", tier: "Sub-DPS", role: "Support", rarity: 5 },
+            { id: "lohen", name: "Lohen", element: "Cryo", weapon: "Polearm", tier: "D", role: "Main Dps", rarity: 4 }
+        ];
+
+        // Ekrana Basma Fonksiyonu
+        function displayCharacters(data) {
+            const grid = document.getElementById('character-grid');
+            grid.innerHTML = "";
+            
+            document.getElementById('char-count').innerText = `${data.length} Karakter`;
+
+            if(data.length === 0) {
+                grid.innerHTML = `<div class="col-12 text-center my-5 text-muted">Aranan kriterlere uygun karakter bulunamadı.</div>`;
+                return;
+            }
+
+            data.forEach(char => {
+                const starsHtml = "★".repeat(char.rarity);
+                grid.innerHTML += `
+                    <div class="col">
+                        <div class="char-card rarity-${char.rarity} h-100">
+                            <div class="img-container">
+                                <span class="element-badge text-warning fw-semibold">${char.element}</span>
+                                <a href="detay.html?char=${char.id}">
+                                    <img src="resimler/${char.id}.jpg" onerror="this.src='https://placehold.co/300x250/161b22/ffffff?text=${char.name}'" alt="${char.name}">
+                                </a>
+                            </div>
+                            <div class="p-2 text-center text-white">
+                                <h6 class="fw-bold mb-1 text-truncate">
+                                    <a href="detay.html?char=${char.id}" class="card-link">${char.name}</a>
+                                </h6>
+                                <div class="stars mb-1">${starsHtml}</div>
+                                <div class="text-muted small">${char.weapon} / ${char.role}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Akıllı Kombine Filtreleme Motoru
+        function applyFilters() {
+            const elementValue = document.getElementById('elementFilter').value;
+            const weaponValue = document.getElementById('weaponFilter').value;
+
+            let filteredData = characters;
+
+            if (elementValue !== 'ALL') {
+                filteredData = filteredData.filter(c => c.element === elementValue);
+            }
+
+            if (weaponValue !== 'ALL') {
+                filteredData = filteredData.filter(c => c.weapon === weaponValue);
+            }
+
+            displayCharacters(filteredData);
+        }
+
+        // Sayfa açılışında listeyi yükle
+        displayCharacters(characters);
+    </script>
+</body>
+</html>

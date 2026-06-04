@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Küresel Tier List - Teyvat Arşivi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0c0f12; color: #f0f6fc; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background-color: #161b22; border-bottom: 2px solid #30363d; }
+        
+        .tier-row {
+            display: flex;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .tier-header {
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #000;
+            flex-shrink: 0;
+        }
+        .tier-ss { background-color: #ff7f7f; }
+        .tier-s  { background-color: #ffbf7f; }
+        .tier-a  { background-color: #ffdf7f; }
+        .tier-b  { background-color: #ffff7f; }
+        .tier-c  { background-color: #bfff7f; }
+        .tier-d  { background-color: #7fff7f; }
+
+        .tier-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            gap: 8px;
+        }
+        
+        .mini-char {
+            width: 70px;
+            text-align: center;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        .mini-char img { width: 100%; height: 70px; object-fit: cover; }
+        .mini-char p { margin: 0; padding: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-char a { text-decoration: none; color: white; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow">
+        <div class="container">
+            <a class="navbar-brand text-warning fw-bold fs-4" href="index.html">Teyvat Arşivi</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white me-3" href="index.html">Karakterler</a>
+                <a class="nav-link active me-3" href="tier-list.html">Tier List</a>
+                <a class="nav-link text-white" href="hakkinda.html">Hakkında</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <div class="bg-dark p-4 rounded border border-secondary mb-4 text-center">
+            <h2 class="text-warning fw-bold">Genshin Impact Güncel Güç Sıralaması</h2>
+            <p class="text-muted m-0">Genshin-Builds küresel standartlarına göre uyarlanmış güncel güç hiyerarşisi.</p>
+        </div>
+
+        <div id="tier-list-container">
+            <div class="tier-row"><div class="tier-header tier-ss">SS</div><div class="tier-content" id="tier-SS-box"></div></div>
+            <div class="tier-row"><div class="tier-header tier-s">S</div><div class="tier-content" id="tier-S-box"></div></div>
+            <div class="tier-row"><div class="tier-header tier-a">A</div><div class="tier-content" id="tier-A-box"></div></div>
+            <div class="tier-row"><div class="tier-header tier-b">B</div><div class="tier-content" id="tier-B-box"></div></div>
+            <div class="tier-row"><div class="tier-header tier-c">C</div><div class="tier-content" id="tier-C-box"></div></div>
+            <div class="tier-row"><div class="tier-header tier-d">D</div><div class="tier-content" id="tier-D-box"></div></div>
+        </div>
+    </main>
+
+    <script>
+        // index.html ile senkronize edilmiş 107 karakter havuzu
+        const characters = [
+            { id: "linnea", name: "Linnea", tier: "SS" }, { id: "zibai", name: "Zibai", tier: "SS" },
+            { id: "columbina", name: "Columbina", tier: "SS" }, { id: "durin", name: "Durin", tier: "SS" },
+            { id: "flins", name: "Flins", tier: "SS" }, { id: "lauma", name: "Lauma", tier: "SS" },
+            { id: "ineffa", name: "Ineffa", tier: "SS" }, { id: "skirk", name: "Skirk", tier: "SS" },
+            { id: "arlecchino", name: "Arlecchino", tier: "SS" }, { id: "mavuika", name: "Mavuika", tier: "SS" },
+            { id: "citlali", name: "Citlali", tier: "SS" }, { id: "xilonen", name: "Xilonen", tier: "SS" },
+            { id: "furina", name: "Furina", tier: "SS" }, { id: "neuvillette", name: "Neuvillette", tier: "SS" },
+            { id: "bennet", name: "Bennett", tier: "SS" }, { id: "iansan", name: "Iansan", tier: "SS" },
+            { id: "kazuha", name: "Kaedehara Kazuha", tier: "SS" }, { id: "yelan", name: "Yelan", tier: "SS" },
+            { id: "raiden", name: "Raiden Shogun", tier: "SS" }, { id: "escoffier", name: "Escoffier", tier: "SS" },
+            { id: "nilou", name: "Nilou", tier: "SS" }, { id: "sucrose", name: "Sucrose", tier: "SS" },
+            { id: "nicole", name: "Nicole", tier: "S" }, { id: "varka", name: "Grand Master Varka", tier: "S" },
+            { id: "nefer", name: "Nefer", tier: "S" }, { id: "nahida", name: "Nahida", tier: "S" },
+            { id: "varesa", name: "Varesa", tier: "S" }, { id: "mualani", name: "Mualani", tier: "S" },
+            { id: "clorinde", name: "Clorinde", tier: "S" }, { id: "kinich", name: "Kinich", tier: "S" },
+            { id: "chasca", name: "Chasca", tier: "S" }, { id: "chiori", name: "Chiori", tier: "A" },
+            { id: "alhaitam", name: "Alhaitham", tier: "S" }, { id: "xiangling", name: "Xiangling", tier: "S" },
+            { id: "hutao", name: "Hu Tao", tier: "S" }, { id: "kokomi", name: "Sangonomiya Kokomi", tier: "S" },
+            { id: "lyney", name: "Lyney", tier: "S" }, { id: "ganyu", name: "Ganyu", tier: "S" },
+            { id: "ayaka", name: "Kamisato Ayaka", tier: "S" }, { id: "yaemiko", name: "Yae Miko", tier: "S" },
+            { id: "zhongli", name: "Zhongli", tier: "S" }, { id: "xingqiu", name: "Xingqiu", tier: "S" },
+            { id: "tartaglia", name: "Tartaglia", tier: "S" }, { id: "fischl", name: "Fischl", tier: "S" },
+            { id: "tighnari", name: "Tighnari", tier: "S" }, { id: "kukishinobu", name: "Kuki Shinobu", tier: "S" },
+            { id: "venti", name: "Venti", tier: "S" }, { id: "emilie", name: "Emilie", tier: "S" },
+            { id: "ororon", name: "Ororon", tier: "S" }, { id: "prune", name: "Prune", tier: "A" },
+            { id: "illuga", name: "Illuga", tier: "A" }, { id: "keqing", name: "Keqing", tier: "A" },
+            { id: "chevreuse", name: "Chevreuse", tier: "A" }, { id: "mizuki", name: "Mizuki", tier: "A" },
+            { id: "sigewinne", name: "Sigewinne", tier: "A" }, { id: "lanyan", name: "Lanyan", tier: "A" },
+            { id: "xianyun", name: "Xianyun", tier: "A" }, { id: "navia", name: "Navia", tier: "A" },
+            { id: "wriothesley", name: "Wriothesley", tier: "A" }, { id: "yoimiya", name: "Yoimiya", tier: "A" },
+            { id: "wanderer", name: "Wanderer", tier: "A" }, { id: "shenhe", name: "Shenhe", tier: "A" },
+            { id: "cyno", name: "Cyno", tier: "A" }, { id: "jean", name: "Jean", tier: "A" },
+            { id: "xiao", name: "Xiao", tier: "A" }, { id: "mona", name: "Mona", tier: "A" },
+            { id: "ayato", name: "Kamisato Ayato", tier: "A" }, { id: "thoma", name: "Thoma", tier: "A" },
+            { id: "barbara", name: "Barbara", tier: "A" }, { id: "yaoyao", name: "Yaoyao", tier: "A" },
+            { id: "baizhu", name: "Baizhu", tier: "A" }, { id: "klee", name: "Klee", tier: "A" },
+            { id: "albedo", name: "Albedo", tier: "A" }, { id: "aino", name: "Aino", tier: "A" },
+            { id: "rosaria", name: "Rosaria", tier: "A" }, { id: "lynette", name: "Lynette", tier: "B" },
+            { id: "layla", name: "Layla", tier: "B" }, { id: "itto", name: "Arataki Itto", tier: "B" },
+            { id: "noelle", name: "Noelle", tier: "B" }, { id: "eula", name: "Eula", tier: "B" },
+            { id: "diona", name: "Diona", tier: "B" }, { id: "diluc", name: "Diluc", tier: "B" },
+            { id: "beidou", name: "Beidou", tier: "B" }, { id: "sara", name: "Kujou Sara", tier: "B" },
+            { id: "faruzan", name: "Faruzan", tier: "B" }, { id: "lisa", name: "Lisa", tier: "B" },
+            { id: "collei", name: "Collei", tier: "B" }, { id: "ifa", name: "Ifa", tier: "B" },
+            { id: "razor", name: "Razor", tier: "B" }, { id: "jahoda", name: "Jahoda", tier: "B" },
+            { id: "gaming", name: "Gaming", tier: "C" }, { id: "qiqi", name: "Qiqi", tier: "C" },
+            { id: "gorou", name: "Gorou", tier: "C" }, { id: "sayu", name: "Sayu", tier: "C" },
+            { id: "kaeya", name: "Kaeya", tier: "C" }, { id: "mika", name: "Mika", tier: "C" },
+            { id: "yunjin", name: "Yun Jin", tier: "C" }, { id: "kirara", name: "Kirara", tier: "C" },
+            { id: "chongyun", name: "Chongyun", tier: "C" }, { id: "yanfei", name: "Yanfei", tier: "C" },
+            { id: "heizou", name: "Shikanoin Heizou", tier: "C" }, { id: "freminet", name: "Freminet", tier: "D" },
+            { id: "kaveh", name: "Kaveh", tier: "D" }, { id: "ningguang", name: "Ningguang", tier: "D" },
+            { id: "dori", name: "Dori", tier: "D" }, { id: "candace", name: "Candace", tier: "D" },
+            { id: "amber", name: "Amber", tier: "D" }, { id: "xinyan", name: "Xinyan", tier: "D" },
+            { id: "dehya", name: "Dehya", tier: "D" }, { id: "traveler", name: "Traveler Twins", tier: "D" },
+            { id: "lohen", name: "Lohen", tier: "D" }
+        ];
+
+        characters.forEach(char => {
+            const containerBox = document.getElementById(`tier-${char.tier}-box`);
+            if (containerBox) {
+                containerBox.innerHTML += `
+                    <div class="mini-char">
+                        <a href="detay.html?char=${char.id}">
+                            <img src="resimler/${char.id}.jpg" onerror="this.src='https://placehold.co/100x100/21262d/ffffff?text=${char.name[0]}'" alt="${char.name}">
+                            <p>${char.name}</p>
+                        </a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

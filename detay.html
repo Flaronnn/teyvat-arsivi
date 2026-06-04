@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Karakter Detayı - Teyvat Arşivi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0c0f12;
+            --bg-card: #161b22;
+            --bg-card2: #1c2128;
+            --border: #30363d;
+            --gold: #ffc107;
+            --gold-dim: #c89b2a;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: #f0f6fc;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+        }
+
+        /* ─── Hero bölümü ─── */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0 40px;
+            margin-bottom: 30px;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 60% 50%, rgba(255,193,7,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .char-portrait {
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            box-shadow: 0 0 40px rgba(255,193,7,0.25);
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* ─── Tier rozeti ─── */
+        .tier-badge {
+            display: inline-block;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 4px 18px;
+            border-radius: 20px;
+            color: #000;
+            letter-spacing: 2px;
+        }
+        .tier-SS { background: #ff7f7f; }
+        .tier-S  { background: #ffbf7f; }
+        .tier-A  { background: #ffdf7f; }
+        .tier-B  { background: #ffff7f; }
+        .tier-C  { background: #bfff7f; }
+        .tier-D  { background: #7fff7f; }
+
+        /* ─── Element rozeti ─── */
+        .element-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        .el-pyro    { background: rgba(255,100,50,0.2);  border-color: #ff6432; color: #ff9070; }
+        .el-hydro   { background: rgba(50,150,255,0.2);  border-color: #3296ff; color: #70b8ff; }
+        .el-anemo   { background: rgba(100,200,180,0.2); border-color: #64c8b4; color: #90dcc8; }
+        .el-electro { background: rgba(160,80,255,0.2);  border-color: #a050ff; color: #c890ff; }
+        .el-dendro  { background: rgba(100,200,50,0.2);  border-color: #64c832; color: #90dc60; }
+        .el-cryo    { background: rgba(130,200,255,0.2); border-color: #82c8ff; color: #b0dcff; }
+        .el-geo     { background: rgba(200,160,50,0.2);  border-color: #c8a032; color: #dcc060; }
+        .el-unknown { background: rgba(150,150,150,0.2); border-color: #969696; color: #bebebe; }
+
+        /* ─── Yıldız ─── */
+        .stars { color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; }
+
+        /* ─── Info kartları ─── */
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            height: 100%;
+        }
+        .info-card h5 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .info-card p {
+            font-size: 1rem;
+            color: #f0f6fc;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* ─── Silah / Artifact tagları ─── */
+        .tag {
+            display: inline-block;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            color: #c9d1d9;
+            margin: 4px;
+        }
+        .tag-weapon { border-color: #ffc107; color: #ffc107; }
+        .tag-artifact { border-color: #a78bfa; color: #a78bfa; }
+
+        /* ─── Takım tavsiyeleri ─── */
+        .team-card {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+        }
+        .team-card .role {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            margin-bottom: 4px;
+        }
+
+        /* ─── Geri butonu ─── */
+        .btn-back {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-back:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* ─── Bölüm başlıkları ─── */
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        footer {
+            background-color: var(--bg-card);
+            margin-top: 80px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .char-name-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark shadow">
+        <div class="container">
+            <a class="navbar-brand text-warning fw-bold fs-4" href="index.html">Teyvat Arşivi</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white me-3" href="index.html">Karakterler</a>
+                <a class="nav-link text-white me-3" href="tier-list.html">Tier List</a>
+                <a class="nav-link text-white" href="hakkinda.html">Hakkında</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container pb-5">
+
+        <!-- Hero -->
+        <div class="hero-section">
+            <div class="hero-bg"></div>
+            <div class="row align-items-center g-4">
+                <div class="col-md-4 text-center">
+                    <img id="char-image" src="" class="char-portrait" alt="Karakter Görseli">
+                </div>
+                <div class="col-md-8">
+                    <a href="index.html" class="btn-back mb-3">← Listeye Geri Dön</a>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span id="char-tier-badge" class="tier-badge">SS</span>
+                        <span id="char-element-badge" class="element-badge el-unknown">Bilinmiyor</span>
+                    </div>
+                    <h1 id="char-name" class="char-name-title">Karakter</h1>
+                    <div id="char-stars" class="stars mb-3">★★★★★</div>
+                    <p id="char-desc" class="text-light opacity-75 fs-6" style="line-height:1.7; max-width:560px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temel bilgiler -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <h5>Silah</h5>
+                    <p id="info-weapon">—</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <h5>Bölge</h5>
+                    <p id="info-region">—</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <h5>Rol</h5>
+                    <p id="info-role">—</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <h5>Yıldız</h5>
+                    <p id="info-rarity">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Silah tavsiyeleri -->
+        <div class="mb-4">
+            <p class="section-title">Önerilen Silahlar</p>
+            <div id="recommended-weapons"></div>
+        </div>
+
+        <!-- Artifact tavsiyeleri -->
+        <div class="mb-4">
+            <p class="section-title">Önerilen Artifact Setleri</p>
+            <div id="recommended-artifacts"></div>
+        </div>
+
+        <!-- Takım önerileri -->
+        <div class="mb-4">
+            <p class="section-title">Takım Önerileri</p>
+            <div id="team-recommendations" class="row g-2"></div>
+        </div>
+
+        <!-- Benzer karakterler -->
+        <div class="mb-4">
+            <p class="section-title">Benzer Karakterler</p>
+            <div id="similar-chars" class="d-flex flex-wrap gap-3"></div>
+        </div>
+
+    </main>
+
+    <footer class="text-center">
+        <div class="container">
+            <p class="m-0 text-light opacity-50">© 2026 Mustafa Arda ERDEM — Teyvat Arşivi</p>
+        </div>
+    </footer>
+
+    <script>
+    /* ═══════════════════════════════════════════════
+       KARAKTER VERİ TABANI — 107 karakter
+       element: pyro / hydro / anemo / electro / dendro / cryo / geo / unknown
+       weaponType: Kılıç / İki El Kılıcı / Mızrak / Yay / Katalizör
+       role: Ana DPS / Alt DPS / Destek / Heal / Kalkan / Buffer
+    ═══════════════════════════════════════════════ */
+    const characterData = {
+        linnea:      { name:"Linnea",             element:"cryo",    stars:5, weaponType:"Katalizör",    region:"Snezhnaya",  role:"Alt DPS",  tier:"SS", desc:"Snowflake büyücüsü Linnea, buzun keskin kristallerini rakiplerine fırlatır. Cryo reaksiyonlarında inanılmaz sinerji sağlar.", weapons:["Tulaytullah'ın Hatırası","Kayınç Kılıcı","Kaydedilmiş Ses"], artifacts:["Buzlu Rüzgar","Blizzard Strayer"], teams:["Ayaka Freeze","Cryo Hypercarry"] },
+        zibai:       { name:"Zibai",              element:"anemo",   stars:5, weaponType:"Mızrak",       region:"Liyue",      role:"Alt DPS",  tier:"SS", desc:"Rüzgarın içinde dans eden Zibai, anemo enerjisini ustaca yönetir ve takımına hız kazandırır.", weapons:["Jade Winged-Spear","Staff of Homa","Calamity Queller"], artifacts:["Viridescent Venerer","Marechaussee Hunter"], teams:["Anemo Swirl","Liyue DPS"] },
+        columbina:   { name:"Columbina",          element:"hydro",   stars:5, weaponType:"Katalizör",    region:"Snezhnaya",  role:"Ana DPS",  tier:"SS", desc:"Harbinger'ların en tehlikeli üyelerinden biri. Hydro büyüleri rakip sıralarında büyük hasara neden olur.", weapons:["Tulaytullah'ın Hatırası","Kagura's Verity","Lost Prayer"], artifacts:["Heart of Depth","Marechaussee Hunter"], teams:["Hydro Vaporize","Harbinger"] },
+        durin:       { name:"Durin",              element:"pyro",    stars:5, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Ana DPS",  tier:"SS", desc:"Ejderhanın enerjisini taşıyan Durin, büyük alevler saçar ve geniş alan hasarıyla düşmanları yarıklar.", weapons:["Wolf's Gravestone","Beacon of the Reed Sea","Serpent Spine"], artifacts:["Crimson Witch","Marechaussee Hunter"], teams:["Pyro Nuke","Bennett Buff"] },
+        flins:       { name:"Flins",              element:"geo",     stars:5, weaponType:"Kılıç",        region:"Fontaine",   role:"Destek",   tier:"SS", desc:"Taşın sağlamlığını zarafetle birleştiren Flins, geo rezonansıyla takımını güçlendirir.", weapons:["Freedom-Sworn","Mistsplitter","Haran Geppaku Futsu"], artifacts:["Archaic Petra","Tenacity of the Millelith"], teams:["Geo Archon","Fontaine Support"] },
+        lauma:       { name:"Lauma",              element:"electro", stars:5, weaponType:"Yay",          region:"Natlan",     role:"Ana DPS",  tier:"SS", desc:"Natlan'ın yıldırım okçusu Lauma, elektro enerjisini okuna doldurarak tüm alanı kasıp kavurur.", weapons:["Thundering Pulse","Aqua Simulacra","Polar Star"], artifacts:["Thundering Fury","Marechaussee Hunter"], teams:["Electro Hypercarry","Aggravate"] },
+        ineffa:      { name:"Ineffa",             element:"dendro",  stars:5, weaponType:"Katalizör",    region:"Sumeru",     role:"Destek",   tier:"SS", desc:"Sumeru'nun gizemli büyücüsü Ineffa, dendro ağını kurarak takım arkadaşlarına muazzam buff verir.", weapons:["A Thousand Floating Dreams","Kagura's Verity","Tulaytullah's Remembrance"], artifacts:["Deepwood Memories","Flower of Paradise Lost"], teams:["Hyperbloom","Quicken"] },
+        skirk:       { name:"Skirk",              element:"cryo",    stars:5, weaponType:"Kılıç",        region:"Bilinmiyor", role:"Ana DPS",  tier:"SS", desc:"Esrarengiz ve ölümcül. Skirk'in cryo kılıcı, buzlu darbeleriyle zırhları parçalar ve düşmanlara nüfuz eder.", weapons:["Mistsplitter Reforged","Haran Geppaku Futsu","Light of Foliar Incision"], artifacts:["Blizzard Strayer","Marechaussee Hunter"], teams:["Cryo Freeze","Mono Cryo"] },
+        arlecchino:  { name:"Arlecchino",         element:"pyro",    stars:5, weaponType:"Mızrak",       region:"Snezhnaya",  role:"Ana DPS",  tier:"SS", desc:"IV. Harbinger. Ölümle dans eden Arlecchino, ateşli mızrağıyla HP yakarak eşsiz hasar üretir.", weapons:["Staff of Homa","Deathmatch","Crimson Moon's Semblance"], artifacts:["Marechaussee Hunter","Crimson Witch"], teams:["Arlecchino Vaporize","Bennett Xingqiu Kazuha"] },
+        mavuika:     { name:"Mavuika",            element:"pyro",    stars:5, weaponType:"İki El Kılıcı", region:"Natlan",     role:"Ana DPS",  tier:"SS", desc:"Natlan'ın koruyucusu Mavuika, devasa pyro darbelerini tribanda titretiyor. Night Soul mekanik desteğiyle benzersizdir.", weapons:["Beacon of the Reed Sea","Wolf's Gravestone","Verdant Clivias"], artifacts:["Marechaussee Hunter","Obsidian Codex"], teams:["Natlan Pyro","Mavuika Vaporize"] },
+        citlali:     { name:"Citlali",            element:"cryo",    stars:5, weaponType:"Katalizör",    region:"Natlan",     role:"Destek",   tier:"SS", desc:"Soğuk büyülerle takımını koruyan Citlali, Natlan'ın en etkili cryo destekçisidir.", weapons:["Tulaytullah's Remembrance","Kagura's Verity","Lost Prayer"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Cryo Buffer","Natlan Support"] },
+        xilonen:     { name:"Xilonen",            element:"geo",     stars:5, weaponType:"Kılıç",        region:"Natlan",     role:"Destek",   tier:"SS", desc:"Natlan'ın hızlı kılıçcısı Xilonen, geo kalkanlarıyla takımını koruyan ve düşman defansını eriten üst düzey bir destek karakteridir.", weapons:["Peak Patrol Song","Mistsplitter Reforged","Fleuve Cendre Ferryman"], artifacts:["Scroll of the Hero","Tenacity of the Millelith"], teams:["Geo Support","Natlan Mono"] },
+        furina:      { name:"Furina",             element:"hydro",   stars:5, weaponType:"Kılıç",        region:"Fontaine",   role:"Destek",   tier:"SS", desc:"Fontaine'in eski arkhonu. Furina, HP dalgalanmalarıyla muazzam hasar multiplier sağlayan oyunun en güçlü destek karakteridir.", weapons:["Splendor of Tranquil Waters","Iron Sting","Finale of the Deep"], artifacts:["Golden Troupe","Noblesse Oblige"], teams:["Furina Neuvillette","Furina Arlecchino","Furina Hyperbloom"] },
+        neuvillette: { name:"Neuvillette",        element:"hydro",   stars:5, weaponType:"Katalizör",    region:"Fontaine",   role:"Ana DPS",  tier:"SS", desc:"Fontaine'in baş yargıcı. Charged attack'iyle sahnedeki tüm düşmanlara sürekli hydro hasarı verir; meta'nın zirvesinde.", weapons:["Tome of the Eternal Flow","Cashflow Supervision","Sacrificial Jade"], artifacts:["Marechaussee Hunter","Heart of Depth"], teams:["Neuvillette Furina","Neuvillette Hyperbloom","Mono Hydro"] },
+        bennet:      { name:"Bennett",            element:"pyro",    stars:4, weaponType:"Kılıç",        region:"Mondstadt",  role:"Heal",     tier:"SS", desc:"Şansız maceracı lakabına rağmen oyunun en değerli karakterlerinden biri. Burst'ı hem iyileştirir hem saldırı puanı verir.", weapons:["Aquila Favonia","Mistsplitter","Sapwood Blade"], artifacts:["Noblesse Oblige","Instructor"], teams:["Vaporize","Melt","Neredeyse her takım"] },
+        iansan:      { name:"Iansan",             element:"electro", stars:5, weaponType:"Mızrak",       region:"Natlan",     role:"Destek",   tier:"SS", desc:"Natlan'ın elektro dansçısı Iansan, hız ve enerji reşarjıyla takımına kesintisiz akış sağlar.", weapons:["Staff of the Scarlet Sands","Deathmatch","Missive Windspear"], artifacts:["Thundering Fury","Tenacity of the Millelith"], teams:["Electro Natlan","Quicken Support"] },
+        kazuha:      { name:"Kaedehara Kazuha",  element:"anemo",   stars:5, weaponType:"Kılıç",        region:"Inazuma",    role:"Destek",   tier:"SS", desc:"Inazuma'nın kaçak samurayı. Swirl reaksiyonlarıyla element DMG'yi yükseltir ve düşmanları toplar; hemen her takıma uyar.", weapons:["Freedom-Sworn","Iron Sting","Favonius Sword"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Vaporize","Freeze","Taser","Neredeyse her takım"] },
+        yelan:       { name:"Yelan",              element:"hydro",   stars:5, weaponType:"Yay",          region:"Liyue",      role:"Alt DPS",  tier:"SS", desc:"Liyue'nin gizli ajanı. Off-field hydro hasarı ve burst hasar amplifikasyonuyla Xingqiu'nun yerini alan üst düzey destek.", weapons:["Aqua Simulacra","Elegy for the End","Recurve Bow"], artifacts:["Emblem of Severed Fate","Heart of Depth"], teams:["Yelan Hu Tao","Yelan Arlecchino","Yelan Neuvillette"] },
+        raiden:      { name:"Raiden Shogun",      element:"electro", stars:5, weaponType:"Mızrak",       region:"Inazuma",    role:"Destek",   tier:"SS", desc:"Inazuma'nın Electro Archon'u. Enerji reşarjı ve electro hasarıyla takımı kesintisiz burst döngüsüne sokar.", weapons:["Engulfing Lightning","Staff of Homa","Catch"], artifacts:["Emblem of Severed Fate","Thundersoother"], teams:["Raiden Hypercarry","Shogun Taser","Raiden National"] },
+        escoffier:   { name:"Escoffier",          element:"cryo",    stars:5, weaponType:"Mızrak",       region:"Fontaine",   role:"Destek",   tier:"SS", desc:"Fontaine'in efsanevi şefi. Cryo ve hydro birleşiminden doğan hayalet reaksiyonlarıyla takımına eşsiz fırsatlar sunar.", weapons:["Staff of Homa","Deathmatch","Missive Windspear"], artifacts:["Noblesse Oblige","Blizzard Strayer"], teams:["Freeze Support","Fontaine Cryo"] },
+        nilou:       { name:"Nilou",              element:"hydro",   stars:5, weaponType:"Kılıç",        region:"Sumeru",     role:"Destek",   tier:"SS", desc:"Sumeru'nun dansçısı. Bloom reaksiyonlarını Bountiful Core'a dönüştürür; dendro takımlarının vazgeçilmez parçası.", weapons:["Key of Khaj-Nisut","Iron Sting","Favonius Sword"], artifacts:["Tenacity of the Millelith","Heart of Depth"], teams:["Nilou Bloom","Nilou Hyperbloom"] },
+        sucrose:     { name:"Sucrose",            element:"anemo",   stars:4, weaponType:"Katalizör",    region:"Mondstadt",  role:"Destek",   tier:"SS", desc:"Mondstadt'ın alişimist öğrencisi. Swirl ile element RES düşürür, EM aktarır ve toplay reaksiyonları güçlendirir.", weapons:["Sacrificial Fragments","Thrilling Tales","Mappa Mare"], artifacts:["Viridescent Venerer","Instructor"], teams:["Taser","Vaporize","Bloom Destek"] },
+
+        nicole:      { name:"Nicole",             element:"anemo",   stars:4, weaponType:"Katalizör",    region:"Mondstadt",  role:"Destek",   tier:"S",  desc:"Mondstadt'ın genç alişimisti. Swirl ve RES debuff ile takımına yardım eder.", weapons:["Thrilling Tales","Mappa Mare","Sacrificial Fragments"], artifacts:["Viridescent Venerer","Instructor"], teams:["Swirl Support","Anemo"] },
+        varka:       { name:"Grand Master Varka", element:"pyro",    stars:5, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Ana DPS",  tier:"S",  desc:"Mondstadt'ın büyük ustası, güçlü pyro darbeleriyle alanı yakar.", weapons:["Wolf's Gravestone","Beacon of the Reed Sea"], artifacts:["Crimson Witch","Marechaussee Hunter"], teams:["Pyro DPS","Bennett Buff"] },
+        nefer:       { name:"Nefer",              element:"hydro",   stars:5, weaponType:"Katalizör",    region:"Sumeru",     role:"Alt DPS",  tier:"S",  desc:"Sumeru'dan gelen gizemli hydro büyücüsü.", weapons:["Tulaytullah's Remembrance","Kagura's Verity"], artifacts:["Heart of Depth","Marechaussee Hunter"], teams:["Hydro DPS","Bloom"] },
+        nahida:      { name:"Nahida",             element:"dendro",  stars:5, weaponType:"Katalizör",    region:"Sumeru",     role:"Destek",   tier:"S",  desc:"Lesser Lord Kusanali. Dendro uygulaması ve EM buff ile Bloom/Quicken takımlarının temel taşı.", weapons:["A Thousand Floating Dreams","Sacrificial Fragments","Wandering Evenstar"], artifacts:["Deepwood Memories","Gilded Dreams"], teams:["Hyperbloom","Quicken","Bloom"] },
+        varesa:      { name:"Varesa",             element:"electro", stars:5, weaponType:"Katalizör",    region:"Natlan",     role:"Ana DPS",  tier:"S",  desc:"Natlan'ın elektro büyücüsü, yüksek burst hasarıyla düşman gruplarını ezer.", weapons:["Kagura's Verity","Lost Prayer","Tulaytullah's Remembrance"], artifacts:["Thundering Fury","Marechaussee Hunter"], teams:["Electro DPS","Aggravate"] },
+        mualani:     { name:"Mualani",            element:"hydro",   stars:5, weaponType:"Katalizör",    region:"Natlan",     role:"Ana DPS",  tier:"S",  desc:"Natlan'ın sörf ustası. Night Soul mekanik ile hydro hasarını üst seviyeye taşır.", weapons:["Surf's Up","Cashflow Supervision","Sacrificial Jade"], artifacts:["Marechaussee Hunter","Heart of Depth"], teams:["Natlan Hydro","Vaporize"] },
+        clorinde:    { name:"Clorinde",           element:"electro", stars:5, weaponType:"Kılıç",        region:"Fontaine",   role:"Ana DPS",  tier:"S",  desc:"Fontaine'in şampiyonu. HP ile bağlantılı electro hasar mekanik ve burst döngüsü ile öne çıkar.", weapons:["Absolution","Mistsplitter","Haran Geppaku Futsu"], artifacts:["Marechaussee Hunter","Thundering Fury"], teams:["Clorinde Quicken","Taser"] },
+        kinich:      { name:"Kinich",             element:"dendro",  stars:5, weaponType:"İki El Kılıcı", region:"Natlan",     role:"Ana DPS",  tier:"S",  desc:"Natlan'ın avcısı. Night Soul ile dendro hasarını sürekli sürdürür.", weapons:["Beacon of the Reed Sea","Verdant Clivias"], artifacts:["Obsidian Codex","Marechaussee Hunter"], teams:["Natlan Dendro","Quicken"] },
+        chasca:      { name:"Chasca",             element:"anemo",   stars:5, weaponType:"Yay",          region:"Natlan",     role:"Ana DPS",  tier:"S",  desc:"Natlan'ın hızlı okçusu, anemo swirl ile çok yönlü hasar verir.", weapons:["Astral Vulture's Crimson Plumage","Aqua Simulacra","Polar Star"], artifacts:["Marechaussee Hunter","Viridescent Venerer"], teams:["Natlan Anemo","Multi-element Swirl"] },
+        alhaitam:    { name:"Alhaitham",          element:"dendro",  stars:5, weaponType:"Kılıç",        region:"Sumeru",     role:"Ana DPS",  tier:"S",  desc:"Sumeru Akademisi'nin kütüphanecisi. Quicken/Spread reaksiyonlarıyla yüksek tek hedef hasarı üretir.", weapons:["Light of Foliar Incision","Haran Geppaku Futsu","Iron Sting"], artifacts:["Gilded Dreams","Deepwood Memories"], teams:["Alhaitham Quicken","Spread DPS"] },
+        xiangling:   { name:"Xiangling",          element:"pyro",    stars:4, weaponType:"Mızrak",       region:"Liyue",      role:"Alt DPS",  tier:"S",  desc:"Liyue'nin şefi. Guoba ve Pyronado ile off-field pyro hasarı üretir; Vaporize'ın vazgeçilmez parçası.", weapons:["Staff of Homa","Catch","Deathmatch"], artifacts:["Emblem of Severed Fate","Crimson Witch"], teams:["National Team","Vaporize","Melt"] },
+        hutao:       { name:"Hu Tao",             element:"pyro",    stars:5, weaponType:"Mızrak",       region:"Liyue",      role:"Ana DPS",  tier:"S",  desc:"Liyue'nin cenaze salonu müdürü. Düşük HP'de HP ile orantılı Pyro hasarıyla oyunun en yüksek tek hedef DPS'lerinden biri.", weapons:["Staff of Homa","Dragon's Bane","Deathmatch"], artifacts:["Crimson Witch","Marechaussee Hunter"], teams:["Hu Tao Vaporize","Hu Tao Double Hydro"] },
+        kokomi:      { name:"Sangonomiya Kokomi", element:"hydro",   stars:5, weaponType:"Katalizör",    region:"Inazuma",    role:"Heal",     tier:"S",  desc:"Watatsumi Adası'nın komutanı. AoE iyileştirme ve off-field hydro uygulamasıyla Freeze/Taser takımlarının temel destekçisi.", weapons:["Everlasting Moonglow","Prototype Amber","Hakushin Ring"], artifacts:["Ocean-Hued Clam","Tenacity of the Millelith"], teams:["Kokomi Freeze","Taser","Bloom"] },
+        lyney:       { name:"Lyney",              element:"pyro",    stars:5, weaponType:"Yay",          region:"Fontaine",   role:"Ana DPS",  tier:"S",  desc:"Fontaine'in sihirbaz şovmeni. Mono Pyro takımda burst yüksek hasar üretir.", weapons:["The First Great Magic","Polar Star","Aqua Simulacra"], artifacts:["Marechaussee Hunter","Crimson Witch"], teams:["Mono Pyro","Lyney Bennett"] },
+        ganyu:       { name:"Ganyu",              element:"cryo",    stars:5, weaponType:"Yay",          region:"Liyue",      role:"Ana DPS",  tier:"S",  desc:"Liyue'nin yarı-adepti. Charged shot ile devasa hasar; Melt veya Freeze takımlarında oyunun en yüksek hasarlarından biri.", weapons:["Polar Star","Amos' Bow","Aqua Simulacra"], artifacts:["Blizzard Strayer","Wanderer's Troupe"], teams:["Ganyu Melt","Ganyu Freeze"] },
+        ayaka:       { name:"Kamisato Ayaka",     element:"cryo",    stars:5, weaponType:"Kılıç",        region:"Inazuma",    role:"Ana DPS",  tier:"S",  desc:"Inazuma'nın asil kızı. Freeze takımında Cryo hasarıyla düşmanları dondurup parçalar.", weapons:["Mistsplitter Reforged","Haran Geppaku Futsu","Amenoma Kageuchi"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Ayaka Freeze","Mono Cryo"] },
+        yaemiko:     { name:"Yae Miko",           element:"electro", stars:5, weaponType:"Katalizör",    region:"Inazuma",    role:"Alt DPS",  tier:"S",  desc:"Narukami Adası'nın Guuji'si. Sessiz electro hasarı ve burst ile Taser/Quicken takımlarında sürekli hasar üretir.", weapons:["Kagura's Verity","Tulaytullah's Remembrance","Skyward Atlas"], artifacts:["Thundering Fury","Gilded Dreams"], teams:["Taser","Quicken","Electro Hypercarry"] },
+        zhongli:     { name:"Zhongli",            element:"geo",     stars:5, weaponType:"Mızrak",       region:"Liyue",      role:"Kalkan",   tier:"S",  desc:"Liyue'nin eski Geo Arkhonu. Oyunun en sağlam kalkanını sunar ve Jade Screen ile düşman RES'ini düşürür.", weapons:["Staff of Homa","Vortex Vanquisher","Deathmatch"], artifacts:["Tenacity of the Millelith","Archaic Petra"], teams:["Zhongli Bastion","Neredeyse her takım"] },
+        xingqiu:     { name:"Xingqiu",            element:"hydro",   stars:4, weaponType:"Kılıç",        region:"Liyue",      role:"Alt DPS",  tier:"S",  desc:"Feiyun Ticaret Birliği'nin ikinci oğlu. Off-field hydro uygulama ve hasar azaltmayla Vaporize'ın çekirdek destekçisi.", weapons:["Sacrificial Sword","Favonius Sword","Skyward Blade"], artifacts:["Emblem of Severed Fate","Noblesse Oblige"], teams:["National Team","Vaporize","Hu Tao Vaporize"] },
+        tartaglia:   { name:"Tartaglia",          element:"hydro",   stars:5, weaponType:"Yay",          region:"Snezhnaya",  role:"Ana DPS",  tier:"S",  desc:"XI. Harbinger. Melee stance'ında yüksek hydro hasarıyla alanı kasıp kavurur.", weapons:["Polar Star","Aqua Simulacra","Thundering Pulse"], artifacts:["Heart of Depth","Marechaussee Hunter"], teams:["Childe International","Childe Vaporize"] },
+        fischl:      { name:"Fischl",             element:"electro", stars:4, weaponType:"Yay",          region:"Mondstadt",  role:"Alt DPS",  tier:"S",  desc:"Mondstadt'ın prenses detektifi. Oz ile kesintisiz off-field electro hasarı üretir.", weapons:["Polar Star","Stringless","Alley Hunter"], artifacts:["Thundering Fury","Golden Troupe"], teams:["Taser","Quicken","Electro Hypercarry"] },
+        tighnari:    { name:"Tighnari",           element:"dendro",  stars:5, weaponType:"Yay",          region:"Sumeru",     role:"Ana DPS",  tier:"S",  desc:"Avidya Ormanı'nın koruyucusu. Charged shot Quicken kombosuyla Spread hasarı üretir.", weapons:["Hunter's Path","Polar Star","Aqua Simulacra"], artifacts:["Gilded Dreams","Deepwood Memories"], teams:["Tighnari Quicken","Spread"] },
+        kukishinobu: { name:"Kuki Shinobu",       element:"electro", stars:4, weaponType:"Kılıç",        region:"Inazuma",    role:"Heal",     tier:"S",  desc:"Arataki Çetesi'nin akılı kızı. HP tabanlı heal ve off-field electro ile Hyperbloom takımlarında çalışır.", weapons:["Key of Khaj-Nisut","Iron Sting","Freedom Sworn"], artifacts:["Gilded Dreams","Tenacity of the Millelith"], teams:["Hyperbloom","Taser"] },
+        venti:       { name:"Venti",              element:"anemo",   stars:5, weaponType:"Yay",          region:"Mondstadt",  role:"Destek",   tier:"S",  desc:"Mondstadt'ın Anemo Arkhonu. Düşmanları toplayarak yerden kaldırır ve enerji reşarjı sağlar.", weapons:["Elegy for the End","Favonius Warbow","Stringless"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Venti Swirl","Freeze","Abyss Gruplandırma"] },
+        emilie:      { name:"Emilie",             element:"dendro",  stars:5, weaponType:"Mızrak",       region:"Fontaine",   role:"Alt DPS",  tier:"S",  desc:"Fontaine'in parfümcüsü. Off-field dendro ve Scentsation mekanik ile Hyperbloom takımlarında etkili.", weapons:["Lumidouce Elegy","Staff of Homa","Deathmatch"], artifacts:["Deepwood Memories","Gilded Dreams"], teams:["Hyperbloom","Fontaine Dendro"] },
+        ororon:      { name:"Ororon",             element:"electro", stars:4, weaponType:"Yay",          region:"Natlan",     role:"Alt DPS",  tier:"S",  desc:"Natlan'ın yay ustası. Night Soul ve off-field electro hasarıyla değer katar.", weapons:["Thundering Pulse","Polar Star","Windblume Ode"], artifacts:["Thundering Fury","Golden Troupe"], teams:["Natlan Electro","Aggravate"] },
+
+        prune:       { name:"Prune",              element:"hydro",   stars:4, weaponType:"Kılıç",        region:"Fontaine",   role:"Alt DPS",  tier:"A",  desc:"Fontaine'in şık savaşçısı. Hydro hasarıyla takıma destek verir.", weapons:["Finale of the Deep","Favonius Sword","Iron Sting"], artifacts:["Heart of Depth","Emblem of Severed Fate"], teams:["Hydro Sub DPS","Fontaine"] },
+        illuga:      { name:"Illuga",             element:"cryo",    stars:4, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Destek",   tier:"A",  desc:"Mondstadt'ın güçlü cryo savaşçısı.", weapons:["Sacrificial Greatsword","Favonius Greatsword"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Cryo Support","Freeze"] },
+        keqing:      { name:"Keqing",             element:"electro", stars:5, weaponType:"Kılıç",        region:"Liyue",      role:"Ana DPS",  tier:"A",  desc:"Liyue'nin Thunderclash Yutheng Şefi. Hızlı electro kombo ile hasar üretir.", weapons:["Mistsplitter Reforged","Haran Geppaku Futsu","Lion's Roar"], artifacts:["Thundering Fury","Gilded Dreams"], teams:["Keqing Quicken","Taser"] },
+        chevruse:    { name:"Chevreuse",          element:"pyro",    stars:4, weaponType:"Mızrak",       region:"Fontaine",   role:"Destek",   tier:"A",  desc:"Fontaine polis şefi. Overload takımlarında RES debuff ve heal ile değer katar.", weapons:["Missive Windspear","Favonius Lance","Deathmatch"], artifacts:["Noblesse Oblige","Tenacity of the Millelith"], teams:["Overload","Pyro Electro Destek"] },
+        mizuki:      { name:"Mizuki",             element:"anemo",   stars:5, weaponType:"Katalizör",    region:"Inazuma",    role:"Destek",   tier:"A",  desc:"Inazuma'nın zarif anemo destekçisi, takıma EM ve swirl desteği verir.", weapons:["Favonius Codex","Sacrificial Fragments","Wandering Evenstar"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Anemo Support","Swirl"] },
+        sigewinne:   { name:"Sigewinne",          element:"hydro",   stars:5, weaponType:"Yay",          region:"Fontaine",   role:"Heal",     tier:"A",  desc:"Meropide cezaevi hemşiresi. HP tabanlı hydro heal ve Overcharged reaksiyonlarla değer katar.", weapons:["Silvershower Heartstrings","Aqua Simulacra","Favonius Warbow"], artifacts:["Song of Days Past","Tenacity of the Millelith"], teams:["Hydro Heal","Overload Destek"] },
+        lanyan:      { name:"Lanyan",             element:"anemo",   stars:4, weaponType:"Katalizör",    region:"Liyue",      role:"Destek",   tier:"A",  desc:"Liyue'nin anemo büyücüsü, swirl ile takımı güçlendirir.", weapons:["Sacrificial Fragments","Favonius Codex","Mappa Mare"], artifacts:["Viridescent Venerer","Instructor"], teams:["Anemo Swirl","Liyue"] },
+        xianyun:     { name:"Xianyun",            element:"anemo",   stars:5, weaponType:"Katalizör",    region:"Liyue",      role:"Destek",   tier:"A",  desc:"Cloud Retainer. Plunge Attack güçlendirir ve anemo desteğiyle Xiao gibi karakterlere büyük fırsat sunar.", weapons:["Crane's Echoing Call","Favonius Codex","Wandering Evenstar"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Xiao Support","Plunge Buff"] },
+        navia:       { name:"Navia",              element:"geo",     stars:5, weaponType:"İki El Kılıcı", region:"Fontaine",   role:"Ana DPS",  tier:"A",  desc:"Spina di Rosula lideri. Kristal Shrapnel ile cristallize reaksiyonlardan güç alır.", weapons:["Verdict","Beacon of the Reed Sea","Serpent Spine"], artifacts:["Nighttime Whispers","Marechaussee Hunter"], teams:["Navia Crystallize","Geo DPS"] },
+        wriothesley: { name:"Wriothesley",        element:"cryo",    stars:5, weaponType:"Katalizör",    region:"Fontaine",   role:"Ana DPS",  tier:"A",  desc:"Meropide direktörü. HP ile orantılı cryo yumruk hasarı; Melt veya Freeze'de iyi.", weapons:["Cashflow Supervision","Tulaytullah's Remembrance","Coppelia"], artifacts:["Marechaussee Hunter","Blizzard Strayer"], teams:["Wriothesley Melt","Cryo DPS"] },
+        yoimiya:     { name:"Yoimiya",            element:"pyro",    stars:5, weaponType:"Yay",          region:"Inazuma",    role:"Ana DPS",  tier:"A",  desc:"Naganohara Havai Fişek Dükkanı'nın sahibi. Normal attack pyro hasarıyla Vaporize'da güçlüdür.", weapons:["Thundering Pulse","Polar Star","Hamayumi"], artifacts:["Shimenawa's Reminiscence","Marechaussee Hunter"], teams:["Yoimiya Vaporize","Yelan Yoimiya"] },
+        wanderer:    { name:"Wanderer",           element:"anemo",   stars:5, weaponType:"Katalizör",    region:"Sumeru",     role:"Ana DPS",  tier:"A",  desc:"Eski Scaramouche. Havada süzülerek anemo hasarı üretir; Faruzan ile çok daha güçlüdür.", weapons:["Tulaytullah's Remembrance","Skyward Atlas","Kagura's Verity"], artifacts:["Desert Pavilion","Marechaussee Hunter"], teams:["Wanderer Faruzan","Mono Anemo"] },
+        shenhe:      { name:"Shenhe",             element:"cryo",    stars:5, weaponType:"Mızrak",       region:"Liyue",      role:"Destek",   tier:"A",  desc:"Adepti yetiştirmesi. Cryo hasar bonusu verir; Ayaka ve Ganyu ile çok iyi sinerji.", weapons:["Calamity Queller","Engulfing Lightning","Deathmatch"], artifacts:["Noblesse Oblige","Blizzard Strayer"], teams:["Ayaka Shenhe","Ganyu Shenhe"] },
+        cyno:        { name:"Cyno",               element:"electro", stars:5, weaponType:"Mızrak",       region:"Sumeru",     role:"Ana DPS",  tier:"A",  desc:"Sumeru Akademisi'nin Genel Macer. Uzun burst penceresiyle Quicken/Hyperbloom'da hasar üretir.", weapons:["Staff of the Scarlet Sands","Deathmatch","Missive Windspear"], artifacts:["Gilded Dreams","Thundering Fury"], teams:["Cyno Quicken","Electro DPS"] },
+        jean:        { name:"Jean",               element:"anemo",   stars:5, weaponType:"Kılıç",        region:"Mondstadt",  role:"Heal",     tier:"A",  desc:"Knights of Favonius'un Genel Sekreteri. AoE iyileştirme ve anemo uygulamasıyla çok yönlü destek.", weapons:["Aquila Favonia","Favonius Sword","Freedom-Sworn"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Anemo Heal","Swirl Support"] },
+        xiao:        { name:"Xiao",               element:"anemo",   stars:5, weaponType:"Mızrak",       region:"Liyue",      role:"Ana DPS",  tier:"A",  desc:"Yaksha. Burst süresince plunge attack ile devasa anemo hasarı üretir.", weapons:["Staff of Homa","Deathmatch","Vortex Vanquisher"], artifacts:["Desert Pavilion","Marechaussee Hunter"], teams:["Xiao Xianyun","Mono Anemo"] },
+        mona:        { name:"Mona",               element:"hydro",   stars:5, weaponType:"Katalizör",    region:"Mondstadt",  role:"Destek",   tier:"A",  desc:"Astroloji dahisi. Burst ile muazzam hasar pencereleri açar; Freeze takımının Omen debuffçusu.", weapons:["Tome of the Eternal Flow","Skyward Atlas","Thrilling Tales"], artifacts:["Noblesse Oblige","Heart of Depth"], teams:["Mona Freeze","Mona One-shot"] },
+        ayato:       { name:"Kamisato Ayato",     element:"hydro",   stars:5, weaponType:"Kılıç",        region:"Inazuma",    role:"Ana DPS",  tier:"A",  desc:"Kamisato Klan'ın başı. On-field hydro normal attack hasarıyla Freeze veya Vaporize'da güçlü.", weapons:["Haran Geppaku Futsu","Mistsplitter Reforged","Primordial Jade Cutter"], artifacts:["Heart of Depth","Marechaussee Hunter"], teams:["Ayato Freeze","Ayato Vaporize"] },
+        thoma:       { name:"Thoma",              element:"pyro",    stars:4, weaponType:"Mızrak",       region:"Inazuma",    role:"Kalkan",   tier:"A",  desc:"Yashiro Komisyon'un hane yöneticisi. Burst ile pyro kalkan sağlar; Hu Tao ile sinerji.", weapons:["Favonius Lance","Kitain Cross Spear","Dragon's Bane"], artifacts:["Emblem of Severed Fate","Noblesse Oblige"], teams:["Hu Tao Vaporize","Thoma Shield"] },
+        barbara:     { name:"Barbara",            element:"hydro",   stars:4, weaponType:"Katalizör",    region:"Mondstadt",  role:"Heal",     tier:"A",  desc:"Mondstadt Kilisesi'nin ilahi şarkıcısı. Yüksek iyileştirme kapasitesiyle takımı ayakta tutar.", weapons:["Prototype Amber","Thrilling Tales","Favonius Codex"], artifacts:["Ocean-Hued Clam","Maiden Beloved"], teams:["Hydro Heal","Freeze"] },
+        yaoyao:      { name:"Yaoyao",             element:"dendro",  stars:4, weaponType:"Mızrak",       region:"Liyue",      role:"Heal",     tier:"A",  desc:"Qiqi'nin küçük çırağı. Dendro iyileştirme ve uygulama ile Bloom/Hyperbloom'a katkı sağlar.", weapons:["Favonius Lance","Missive Windspear","Kitain Cross Spear"], artifacts:["Deepwood Memories","Tenacity of the Millelith"], teams:["Hyperbloom Heal","Bloom"] },
+        baizhu:      { name:"Baizhu",             element:"dendro",  stars:5, weaponType:"Katalizör",    region:"Liyue",      role:"Heal",     tier:"A",  desc:"Bubu Eczanesi'nin sahibi. Kesintisiz dendro uygulama ve kalkan ile Bloom/Hyperbloom'da destek.", weapons:["Jadefall's Splendor","Prototype Amber","Favonius Codex"], artifacts:["Deepwood Memories","Noblesse Oblige"], teams:["Hyperbloom Heal","Quicken"] },
+        klee:        { name:"Klee",               element:"pyro",    stars:5, weaponType:"Katalizör",    region:"Mondstadt",  role:"Ana DPS",  tier:"A",  desc:"Mondstadt'ın en tehlikeli şapkalısı. Bomba yağmurlarıyla pyro hasarı üretir.", weapons:["Lost Prayer","Skyward Atlas","Dodoco Tales"], artifacts:["Crimson Witch","Marechaussee Hunter"], teams:["Klee Vaporize","Mono Pyro"] },
+        albedo:      { name:"Albedo",             element:"geo",     stars:5, weaponType:"Kılıç",        region:"Mondstadt",  role:"Alt DPS",  tier:"A",  desc:"Mondstadt'ın baş alişimisti. Off-field geo hasar kristalleriyle yavaş ama güvenilir hasar.", weapons:["Cinnabar Spindle","Harbinger of Dawn","Festering Desire"], artifacts:["Husk of Opulent Dreams","Archaic Petra"], teams:["Geo Resonance","Zhongli Albedo"] },
+        aino:        { name:"Aino",               element:"cryo",    stars:4, weaponType:"Kılıç",        region:"Mondstadt",  role:"Destek",   tier:"A",  desc:"Mondstadt'ın cryo destekçisi, Freeze takımlarına katkı sağlar.", weapons:["Favonius Sword","Sacrificial Sword","Iron Sting"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Cryo Support","Freeze"] },
+        rosaria:     { name:"Rosaria",            element:"cryo",    stars:4, weaponType:"Mızrak",       region:"Mondstadt",  role:"Alt DPS",  tier:"A",  desc:"Kilise rahibesi. CRIT Rate buff ve off-field cryo ile Freeze/Melt takımlarında katkı sağlar.", weapons:["Staff of Homa","Deathmatch","Favonius Lance"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Rosaria Freeze","Melt Support"] },
+        chiori:      { name:"Chiori",             element:"geo",     stars:5, weaponType:"Kılıç",        region:"Inazuma",    role:"Alt DPS",  tier:"A",  desc:"Inazuma'nın moda tasarımcısı. Off-field geo hasar figürinleriyle Geo takımlarına destek.", weapons:["Uraku Misugiri","Primordial Jade Cutter","Haran Geppaku Futsu"], artifacts:["Husk of Opulent Dreams","Archaic Petra"], teams:["Geo Resonance","Chiori Zhongli"] },
+
+        lynette:     { name:"Lynette",            element:"anemo",   stars:4, weaponType:"Kılıç",        region:"Fontaine",   role:"Destek",   tier:"B",  desc:"Lyney'nin ikiz kız kardeşi. Burst ile anemo swirl sağlar.", weapons:["Favonius Sword","Iron Sting","Sacrificial Sword"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Anemo Support","Fontaine"] },
+        layla:       { name:"Layla",              element:"cryo",    stars:4, weaponType:"Kılıç",        region:"Sumeru",     role:"Kalkan",   tier:"B",  desc:"Sumeru öğrencisi. Cryo kalkan ve off-field cryo ile Freeze desteği.", weapons:["Favonius Sword","Sacrificial Sword","Iron Sting"], artifacts:["Blizzard Strayer","Tenacity of the Millelith"], teams:["Freeze Shield","Cryo Support"] },
+        itto:        { name:"Arataki Itto",       element:"geo",     stars:5, weaponType:"İki El Kılıcı", region:"Inazuma",    role:"Ana DPS",  tier:"B",  desc:"Arataki Çetesi lideri. Burst'ta güçlü Geo hasar verir ama Geo takım gereksinimi kısıtlayıcı.", weapons:["Redhorn Stonethresher","Whiteblind","Serpent Spine"], artifacts:["Husk of Opulent Dreams"], teams:["Itto Gorou","Geo Hypercarry"] },
+        noelle:      { name:"Noelle",             element:"geo",     stars:4, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Ana DPS",  tier:"B",  desc:"Mondstadt şövalyesi adayı. Burst ile Geo DPS ve healing bir arada.", weapons:["Redhorn Stonethresher","Whiteblind","Serpent Spine"], artifacts:["Husk of Opulent Dreams","Gladiator's Finale"], teams:["Geo DPS","Itto Noelle"] },
+        eula:        { name:"Eula",               element:"cryo",    stars:5, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Ana DPS",  tier:"B",  desc:"Lawrence Klanı'nın asi kızı. Nuke burst hasarıyla güçlü ama takım gereksinimleri zorlu.", weapons:["Song of Broken Pines","Wolf's Gravestone","Beacon of the Reed Sea"], artifacts:["Pale Flame","Marechaussee Hunter"], teams:["Eula Melt","Eula Rosaria"] },
+        diona:       { name:"Diona",              element:"cryo",    stars:4, weaponType:"Yay",           region:"Mondstadt",  role:"Destek",   tier:"B",  desc:"Angel's Share barmenteri. Cryo kalkan ve iyileştirme ile Freeze desteği.", weapons:["Favonius Warbow","Sacrificial Bow","Recurve Bow"], artifacts:["Noblesse Oblige","Blizzard Strayer"], teams:["Cryo Shield","Freeze Support"] },
+        diluc:       { name:"Diluc",              element:"pyro",    stars:5, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Ana DPS",  tier:"B",  desc:"Mondstadt'ın gecelerin koruyucusu. Eski meta DPS; çeşitli alternatifler günümüzde öne çıktı.", weapons:["Wolf's Gravestone","Beacon of the Reed Sea","Serpent Spine"], artifacts:["Crimson Witch","Marechaussee Hunter"], teams:["Diluc Vaporize","Mono Pyro"] },
+        beidou:      { name:"Beidou",             element:"electro", stars:4, weaponType:"İki El Kılıcı", region:"Liyue",      role:"Alt DPS",  tier:"B",  desc:"Crux Filosu Kaptanı. Burst ile off-field electro ve hasar azaltma sağlar.", weapons:["Wolf's Gravestone","Rainslasher","Sacrificial Greatsword"], artifacts:["Emblem of Severed Fate","Thundering Fury"], teams:["Taser","Electro"] },
+        sara:        { name:"Kujou Sara",         element:"electro", stars:4, weaponType:"Yay",           region:"Inazuma",    role:"Destek",   tier:"B",  desc:"Tenryou Komisyon Generali. Electro ATK buff ile Raiden veya diğer electro karakterleri güçlendirir.", weapons:["Favonius Warbow","The Stringless","Alley Hunter"], artifacts:["Emblem of Severed Fate","Noblesse Oblige"], teams:["Raiden Hypercarry","Electro Buffer"] },
+        faruzan:     { name:"Faruzan",            element:"anemo",   stars:4, weaponType:"Yay",           region:"Sumeru",     role:"Destek",   tier:"B",  desc:"100 yıl uyuyan Sumeru öğretmeni. Anemo RES düşürür ve hasar artırır; Wanderer ile en iyi sinerji.", weapons:["Favonius Warbow","Elegy for the End","Sacrificial Bow"], artifacts:["Viridescent Venerer","Noblesse Oblige"], teams:["Wanderer Faruzan","Mono Anemo"] },
+        lisa:        { name:"Lisa",               element:"electro", stars:4, weaponType:"Katalizör",    region:"Mondstadt",  role:"Alt DPS",  tier:"B",  desc:"Sumeru Akademisi mezunu kütüphaneci. DEF debuff ile Taser takımında kullanılabilir.", weapons:["Thundering Pulse","Kagura's Verity","Hakushin Ring"], artifacts:["Thundering Fury","Gilded Dreams"], teams:["Taser","Electro Sub"] },
+        collei:      { name:"Collei",             element:"dendro",  stars:4, weaponType:"Yay",           region:"Sumeru",     role:"Destek",   tier:"B",  desc:"Tighnari'nin öğrencisi. Off-field dendro uygulama ile Bloom/Hyperbloom desteği.", weapons:["Favonius Warbow","Sacrificial Bow","Elegy for the End"], artifacts:["Deepwood Memories","Noblesse Oblige"], teams:["Bloom Support","Hyperbloom"] },
+        ifa:         { name:"Ifa",                element:"anemo",   stars:4, weaponType:"Katalizör",    region:"Natlan",     role:"Destek",   tier:"B",  desc:"Natlan'ın anemo destekçisi, swirl ile katkı sağlar.", weapons:["Favonius Codex","Sacrificial Fragments","Mappa Mare"], artifacts:["Viridescent Venerer","Instructor"], teams:["Natlan Anemo","Swirl"] },
+        razor:       { name:"Razor",              element:"electro", stars:4, weaponType:"İki El Kılıcı", region:"Mondstadt",  role:"Ana DPS",  tier:"B",  desc:"Mondstadt ormanlarının çocuğu. Burst ile electro DPS, superconduct desteğiyle güçlenir.", weapons:["Wolf's Gravestone","Serpent Spine","Prototype Archaic"], artifacts:["Pale Flame","Gladiator's Finale"], teams:["Razor Superconduct","Mono Electro"] },
+        jahoda:      { name:"Jahoda",             element:"dendro",  stars:4, weaponType:"Kılıç",        region:"Natlan",     role:"Alt DPS",  tier:"B",  desc:"Natlan'ın genç dendro savaşçısı.", weapons:["Iron Sting","Favonius Sword","Sacrificial Sword"], artifacts:["Deepwood Memories","Gilded Dreams"], teams:["Dendro Sub","Natlan"] },
+
+        gaming:      { name:"Gaming",             element:"pyro",    stars:4, weaponType:"İki El Kılıcı", region:"Liyue",      role:"Ana DPS",  tier:"C",  desc:"Liyue'nin aslan dansçısı. Plunge attack ile Pyro hasar üretir.", weapons:["Beacon of the Reed Sea","Serpent Spine","Rainslasher"], artifacts:["Crimson Witch","Marechaussee Hunter"], teams:["Pyro DPS","Vaporize"] },
+        qiqi:        { name:"Qiqi",               element:"cryo",    stars:5, weaponType:"Kılıç",        region:"Liyue",      role:"Heal",     tier:"C",  desc:"Bubu Eczanesi'nin zombi çalışanı. Güçlü iyileştirme sağlar ama hasar verme kapasitesi düşük.", weapons:["Aquila Favonia","Skyward Blade","Favonius Sword"], artifacts:["Maiden Beloved","Ocean-Hued Clam"], teams:["Cryo Heal","Freeze"] },
+        gorou:       { name:"Gorou",              element:"geo",     stars:4, weaponType:"Yay",           region:"Inazuma",    role:"Destek",   tier:"C",  desc:"Watatsumi Ordusu Generali. Geo DEF ve hasar buff; sadece Geo takımında anlamlı.", weapons:["Favonius Warbow","Elegy for the End","Sacrificial Bow"], artifacts:["Husk of Opulent Dreams","Archaic Petra"], teams:["Itto Gorou","Geo Resonance"] },
+        sayu:        { name:"Sayu",               element:"anemo",   stars:4, weaponType:"İki El Kılıcı", region:"Inazuma",    role:"Heal",     tier:"C",  desc:"Shuumatsuban'ın uyumcusu. Hem heal hem swirl sağlar ama sınırlı etki.", weapons:["Wolf's Gravestone","Favonius Greatsword","Sacrificial Greatsword"], artifacts:["Viridescent Venerer","Maiden Beloved"], teams:["Anemo Heal","Swirl"] },
+        kaeya:       { name:"Kaeya",              element:"cryo",    stars:4, weaponType:"Kılıç",        region:"Mondstadt",  role:"Alt DPS",  tier:"C",  desc:"Knights of Favonius Süvari Komutanı. Off-field cryo ile Freeze desteği sağlar.", weapons:["Mistsplitter Reforged","Haran Geppaku Futsu","Favonius Sword"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Freeze Support","Cryo Sub"] },
+        mika:        { name:"Mika",               element:"cryo",    stars:4, weaponType:"Mızrak",       region:"Mondstadt",  role:"Destek",   tier:"C",  desc:"Gökyüzü atlasçısı. Cryo iyileştirme ve ATK hız buff; Eula ile sinerji.", weapons:["Favonius Lance","Missive Windspear","Deathmatch"], artifacts:["Noblesse Oblige","Tenacity of the Millelith"], teams:["Eula Support","Cryo Heal"] },
+        yunjin:      { name:"Yun Jin",            element:"geo",     stars:4, weaponType:"Mızrak",       region:"Liyue",      role:"Destek",   tier:"C",  desc:"Liyue Opera sanatçısı. Normal attack hasarını artırır; yalnızca normal attack DPS karakterlerle değerli.", weapons:["Favonius Lance","Kitain Cross Spear","Missive Windspear"], artifacts:["Husk of Opulent Dreams","Noblesse Oblige"], teams:["Normal Attack Buffer","Yoimiya"] },
+        kirara:      { name:"Kirara",             element:"dendro",  stars:4, weaponType:"Kılıç",        region:"Inazuma",    role:"Kalkan",   tier:"C",  desc:"Komaniya Express'in kedi kurye'si. Dendro kalkan ve uygulama sağlar.", weapons:["Favonius Sword","Iron Sting","Sacrificial Sword"], artifacts:["Deepwood Memories","Tenacity of the Millelith"], teams:["Dendro Shield","Bloom"] },
+        chongyun:    { name:"Chongyun",           element:"cryo",    stars:4, weaponType:"İki El Kılıcı", region:"Liyue",      role:"Destek",   tier:"C",  desc:"Exorcist klanının genci. Alan cryo uygulama ile Melt desteği.", weapons:["Favonius Greatsword","Sacrificial Greatsword","Wolf's Gravestone"], artifacts:["Blizzard Strayer","Noblesse Oblige"], teams:["Melt Support","Cryo"] },
+        yanfei:      { name:"Yanfei",             element:"pyro",    stars:4, weaponType:"Katalizör",    region:"Liyue",      role:"Ana DPS",  tier:"C",  desc:"Hukuk danışmanı. Charged attack pyro hasarıyla Vaporize desteği.", weapons:["Lost Prayer","Skyward Atlas","Dodoco Tales"], artifacts:["Crimson Witch","Shimenawa's Reminiscence"], teams:["Yanfei Vaporize","Pyro DPS"] },
+        heizou:      { name:"Shikanoin Heizou",   element:"anemo",   stars:4, weaponType:"Katalizör",    region:"Inazuma",    role:"Ana DPS",  tier:"C",  desc:"Tenryou Dedektifi. On-field anemo hasarıyla swirl sağlar.", weapons:["Tulaytullah's Remembrance","Kagura's Verity","Skyward Atlas"], artifacts:["Desert Pavilion","Viridescent Venerer"], teams:["Anemo DPS","Swirl"] },
+
+        freminet:    { name:"Freminet",           element:"cryo",    stars:4, weaponType:"İki El Kılıcı", region:"Fontaine",   role:"Ana DPS",  tier:"D",  desc:"Fontaine'in dalgıcı. Riptide mekanik ile hasar verir ama genel performansı düşük.", weapons:["Mailed Flower","Favonius Greatsword","Sacrificial Greatsword"], artifacts:["Blizzard Strayer","Marechaussee Hunter"], teams:["Superconduct","Cryo DPS"] },
+        kaveh:       { name:"Kaveh",              element:"dendro",  stars:4, weaponType:"İki El Kılıcı", region:"Sumeru",     role:"Destek",   tier:"D",  desc:"Sumeru mimarı. Bloom çiçeklerini patlatır ama çok niche bir mekanik.", weapons:["Mailed Flower","Favonius Greatsword","Sacrificial Greatsword"], artifacts:["Deepwood Memories","Gilded Dreams"], teams:["Bloom Burst","Dendro"] },
+        ningguang:   { name:"Ningguang",          element:"geo",     stars:4, weaponType:"Katalizör",    region:"Liyue",      role:"Ana DPS",  tier:"D",  desc:"Liyue'nin Tianquan'ı. Geo hasar ile Jade Screen sayesinde değer sunar ama sınırlı.", weapons:["Skyward Atlas","Lost Prayer","Dodoco Tales"], artifacts:["Archaic Petra","Husk of Opulent Dreams"], teams:["Geo DPS","Ningguang Support"] },
+        dori:        { name:"Dori",               element:"electro", stars:4, weaponType:"İki El Kılıcı", region:"Sumeru",     role:"Heal",     tier:"D",  desc:"Sumeru tüccarı. Elektro iyileştirme ve enerji reşarjı sağlar ama genel meta'da düşük tier.", weapons:["Favonius Greatsword","Sacrificial Greatsword","Forest Regalia"], artifacts:["Tenacity of the Millelith","Gilded Dreams"], teams:["Electro Heal","Hyperbloom"] },
+        candace:     { name:"Candace",            element:"hydro",   stars:4, weaponType:"Mızrak",       region:"Sumeru",     role:"Destek",   tier:"D",  desc:"Sumeru'nun kalkan bekçisi. Hydro kalkan ve infüzyon sağlar ama çok niche.", weapons:["Favonius Lance","Missive Windspear","Kitain Cross Spear"], artifacts:["Tenacity of the Millelith","Noblesse Oblige"], teams:["Hydro Infusion","Normal Attack"] },
+        amber:       { name:"Amber",              element:"pyro",    stars:4, weaponType:"Yay",           region:"Mondstadt",  role:"Destek",   tier:"D",  desc:"Mondstadt'ın tek Outrider'ı. Bunnies ile pyro uygulama; genel performansı meta dışı.", weapons:["Favonius Warbow","Elegy for the End","Recurve Bow"], artifacts:["Noblesse Oblige","Crimson Witch"], teams:["Pyro Support","Melt"] },
+        xinyan:      { name:"Xinyan",             element:"pyro",    stars:4, weaponType:"İki El Kılıcı", region:"Liyue",      role:"Destek",   tier:"D",  desc:"Liyue'nin rock müzisyeni. Pyro kalkan ve fiziksel hasar buff; çok sınırlı kullanım alanı.", weapons:["Beacon of the Reed Sea","Wolf's Gravestone","Serpent Spine"], artifacts:["Crimson Witch","Pale Flame"], teams:["Physical DPS","Pyro Shield"] },
+        dehya:       { name:"Dehya",              element:"pyro",    stars:5, weaponType:"İki El Kılıcı", region:"Sumeru",     role:"Kalkan",   tier:"D",  desc:"Formidable Flame kaptan. Hasar azaltma sağlar ama hem hasar hem destek rolünde yetersiz.", weapons:["Beacon of the Reed Sea","Wolf's Gravestone","Serpent Spine"], artifacts:["Crimson Witch","Emblem of Severed Fate"], teams:["Pyro Shield","Furina Dehya"] },
+        traveler:    { name:"Traveler Twins",     element:"unknown", stars:5, weaponType:"Kılıç",        region:"Dünya",      role:"Destek",   tier:"D",  desc:"Teyvat'ın başrol karakterleri. Her elementle farklı rol üstlenir; hiçbirinde meta tier'a ulaşamaz.", weapons:["Primordial Jade Cutter","Mistsplitter Reforged","Favonius Sword"], artifacts:["Noblesse Oblige","Instructor"], teams:["Herhangi bir takım"] },
+        lohen:       { name:"Lohen",              element:"hydro",   stars:4, weaponType:"İki El Kılıcı", region:"Natlan",     role:"Ana DPS",  tier:"D",  desc:"Natlan'ın hydro savaşçısı; şu an meta'da düşük konumda.", weapons:["Favonius Greatsword","Mailed Flower","Sacrificial Greatsword"], artifacts:["Heart of Depth","Marechaussee Hunter"], teams:["Natlan Hydro","Vaporize"] }
+    };
+
+    /* ─── Yardımcılar ─── */
+    const elementEmoji = {
+        pyro:"🔥", hydro:"💧", anemo:"🌪️", electro:"⚡", dendro:"🌿", cryo:"❄️", geo:"🪨", unknown:"✨"
+    };
+    const elementLabel = {
+        pyro:"Pyro", hydro:"Hydro", anemo:"Anemo", electro:"Electro",
+        dendro:"Dendro", cryo:"Cryo", geo:"Geo", unknown:"Bilinmiyor"
+    };
+
+    /* ─── Sayfa yüklenince ─── */
+    const urlParams = new URLSearchParams(window.location.search);
+    const charId    = urlParams.get('char') || 'traveler';
+    const data      = characterData[charId];
+
+    if (!data) {
+        document.querySelector('main').innerHTML =
+            `<div class="text-center mt-5"><h3 class="text-warning">Karakter bulunamadı.</h3>
+             <a href="index.html" class="btn-back mt-3">← Listeye Geri Dön</a></div>`;
+    } else {
+        /* Görsel */
+        const img = document.getElementById('char-image');
+        img.src = `resimler/${charId}.jpg`;
+        img.onerror = () => { img.src = `https://placehold.co/280x280/161b22/ffc107?text=${data.name[0]}`; };
+
+        /* Tier badge */
+        const tierBadge = document.getElementById('char-tier-badge');
+        tierBadge.textContent = data.tier;
+        tierBadge.className = `tier-badge tier-${data.tier}`;
+
+        /* Element badge */
+        const elBadge = document.getElementById('char-element-badge');
+        elBadge.innerHTML = `${elementEmoji[data.element]} ${elementLabel[data.element]}`;
+        elBadge.className = `element-badge el-${data.element}`;
+
+        /* İsim & yıldızlar */
+        document.getElementById('char-name').textContent  = data.name;
+        document.getElementById('char-stars').textContent = '★'.repeat(data.stars) + '☆'.repeat(5 - data.stars);
+        document.getElementById('char-desc').textContent  = data.desc;
+
+        /* Bilgi kartları */
+        document.getElementById('info-weapon').textContent = data.weaponType;
+        document.getElementById('info-region').textContent = data.region;
+        document.getElementById('info-role').textContent   = data.role;
+        document.getElementById('info-rarity').textContent = `${data.stars} Yıldız`;
+
+        /* Silahlar */
+        const weaponBox = document.getElementById('recommended-weapons');
+        data.weapons.forEach(w => {
+            const span = document.createElement('span');
+            span.className = 'tag tag-weapon';
+            span.textContent = '⚔️ ' + w;
+            weaponBox.appendChild(span);
+        });
+
+        /* Artifact */
+        const artBox = document.getElementById('recommended-artifacts');
+        data.artifacts.forEach(a => {
+            const span = document.createElement('span');
+            span.className = 'tag tag-artifact';
+            span.textContent = '🔮 ' + a;
+            artBox.appendChild(span);
+        });
+
+        /* Takım önerileri */
+        const teamBox = document.getElementById('team-recommendations');
+        data.teams.forEach((t, i) => {
+            const col = document.createElement('div');
+            col.className = 'col-sm-6 col-md-4';
+            col.innerHTML = `<div class="team-card">
+                <div class="role">Takım ${i + 1}</div>
+                <div class="text-light fw-semibold">⚔️ ${t}</div>
+            </div>`;
+            teamBox.appendChild(col);
+        });
+
+        /* Benzer karakterler (aynı element, max 5) */
+        const simBox = document.getElementById('similar-chars');
+        const similar = Object.entries(characterData)
+            .filter(([id, d]) => id !== charId && d.element === data.element)
+            .slice(0, 5);
+
+        similar.forEach(([id, d]) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'width:80px;text-align:center;cursor:pointer;';
+            div.innerHTML = `
+                <a href="detay.html?char=${id}" style="text-decoration:none;color:inherit;">
+                    <img src="resimler/${id}.jpg"
+                         onerror="this.src='https://placehold.co/80x80/161b22/ffffff?text=${d.name[0]}'"
+                         style="width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid #30363d;">
+                    <p style="font-size:0.7rem;margin:4px 0 0;color:#c9d1d9;">${d.name}</p>
+                </a>`;
+            simBox.appendChild(div);
+        });
+    }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
